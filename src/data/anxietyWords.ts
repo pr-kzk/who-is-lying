@@ -1,0 +1,36 @@
+/**
+ * Japanese anxiety/hesitation phrases that indicate a suspect is nervous.
+ * Used by the anxiety detector to trigger visual feedback (shake animation, etc.).
+ */
+export const anxietyWords: string[] = [
+  "それは…",
+  "あの…",
+  "ちょっと待ってください",
+  "えっと",
+  "いや、その…",
+  "なぜそんなことを",
+  "覚えていません",
+  "そんなはずは",
+  "違います",
+  "言い間違え",
+  "そんなことは",
+  "まさか",
+  "どうして",
+  "何を言って",
+  "ええと",
+  "うーん",
+  "その質問は",
+  "関係ないでしょう",
+  "答えたくない",
+  "聞かないで",
+  "なんでそんな",
+  "そ、それは",
+  "い、いえ",
+  "ち、違う",
+  "黙秘します",
+  "知りません",
+  "心当たりは",
+  "やめてください",
+  "そういうわけでは",
+  "ちょっと…",
+];
