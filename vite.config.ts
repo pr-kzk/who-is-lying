@@ -5,6 +5,9 @@ import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  test: {
+    environment: "jsdom",
+  },
   staged: {
     "*": "vp check --fix",
   },
