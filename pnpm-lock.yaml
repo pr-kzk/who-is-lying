@@ -37,6 +37,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^6.0.1
         version: 6.0.1(@voidzero-dev/vite-plus-core@0.1.12(@types/node@25.5.0)(jiti@2.6.1)(typescript@5.9.3))
+      '@voidzero-dev/vite-plus-test':
+        specifier: 0.1.12
+        version: 0.1.12(@types/node@25.5.0)(@voidzero-dev/vite-plus-core@0.1.12(@types/node@25.5.0)(jiti@2.6.1)(typescript@5.9.3))(jiti@2.6.1)(jsdom@29.0.0)(typescript@5.9.3)
       jsdom:
         specifier: ^29.0.0
         version: 29.0.0
