@@ -27,6 +27,7 @@ export function useGameState() {
   );
 
   const canUseHint = currentSuspectQuestionCount >= difficultyConfig.hintUnlockThreshold;
+  const canAskAll = remainingTurns >= 2;
 
   const estimatedScore = useMemo(
     () => calculateScore(state.turnsUsed, state.hintsUsed, true, difficultyConfig.scoreMultiplier),
@@ -41,6 +42,7 @@ export function useGameState() {
     currentSuspect,
     currentChatHistory,
     canUseHint,
+    canAskAll,
     estimatedScore,
     currentSuspectQuestionCount,
   };

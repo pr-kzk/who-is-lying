@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 
 import { Layout } from "../components/Layout";
 import { DIFFICULTY_CONFIGS } from "../config/difficulty";
-import { defaultScenario } from "../data/scenarios";
+import { scenarios } from "../data/scenarios";
 import { useGameState } from "../hooks/useGameState";
 import type { Difficulty, ScoreRecord } from "../types";
 import { getTopScores } from "../utils/storage";
@@ -13,14 +13,20 @@ export function StartScreen() {
   const { dispatch } = useGameState();
   const [playerName, setPlayerName] = useState("");
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
+  const [selectedScenarioId, setSelectedScenarioId] = useState(scenarios[0].id);
 
   const topScores = useMemo(() => getTopScores(5), []);
+
+  const selectedScenario = useMemo(
+    () => scenarios.find((s) => s.id === selectedScenarioId) ?? scenarios[0],
+    [selectedScenarioId],
+  );
 
   const handleStart = useCallback(() => {
     const trimmed = playerName.trim();
     if (!trimmed) return;
-    dispatch({ type: "START_GAME", scenario: defaultScenario, playerName: trimmed, difficulty });
-  }, [dispatch, playerName, difficulty]);
+    dispatch({ type: "START_GAME", scenario: selectedScenario, playerName: trimmed, difficulty });
+  }, [dispatch, playerName, difficulty, selectedScenario]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -58,6 +64,33 @@ export function StartScreen() {
             autoFocus
             className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-shadow"
           />
+
+          {/* Scenario selector */}
+          <div className="mt-4">
+            <p className="text-sm text-gray-400 mb-2">シナリオを選択</p>
+            <div className="grid grid-cols-1 gap-2">
+              {scenarios.map((s) => {
+                const isActive = selectedScenarioId === s.id;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setSelectedScenarioId(s.id)}
+                    className={`px-3 py-2.5 rounded-lg border text-left transition-colors ${
+                      isActive
+                        ? "border-amber-500 bg-amber-600/20 text-amber-300"
+                        : "border-gray-700 bg-gray-800 text-gray-400 hover:border-gray-600"
+                    }`}
+                  >
+                    <div className="font-bold text-sm">{s.title}</div>
+                    <div className="text-xs mt-0.5 opacity-70">
+                      {s.crimeType} / {s.setting}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Difficulty selector */}
           <div className="mt-4">

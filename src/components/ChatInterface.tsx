@@ -9,6 +9,9 @@ interface ChatInterfaceProps {
   disabled: boolean;
   suspectName: string;
   streamingContent: string | null;
+  askAllMode: boolean;
+  onToggleAskAll: () => void;
+  canAskAll: boolean;
 }
 
 function TypingIndicator() {
@@ -32,6 +35,9 @@ export function ChatInterface({
   disabled,
   suspectName,
   streamingContent,
+  askAllMode,
+  onToggleAskAll,
+  canAskAll,
 }: ChatInterfaceProps) {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -125,24 +131,42 @@ export function ChatInterface({
 
       {/* Input area */}
       <div className="border-t border-gray-800 p-3">
-        <div className="flex items-end gap-2 max-w-3xl mx-auto">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={disabled ? "質問できません" : "質問を入力してください..."}
-            disabled={isLoading || disabled}
-            rows={1}
-            className="flex-1 resize-none rounded-xl bg-gray-800 border border-gray-700 px-4 py-2.5 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-          />
-          <button
-            type="button"
-            onClick={handleSend}
-            disabled={isLoading || disabled || !input.trim()}
-            className="shrink-0 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            送信
-          </button>
+        <div className="max-w-3xl mx-auto space-y-2">
+          <div className="flex items-center">
+            <button
+              type="button"
+              onClick={onToggleAskAll}
+              disabled={!canAskAll || isLoading || disabled}
+              className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+                askAllMode
+                  ? "bg-amber-600/80 border-amber-500 text-amber-100"
+                  : "bg-gray-800 border-gray-700 text-gray-400 hover:text-gray-300 hover:border-gray-600"
+              } disabled:opacity-40 disabled:cursor-not-allowed`}
+            >
+              全員に質問（2ターン）
+            </button>
+          </div>
+          <div className="flex items-end gap-2">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={disabled ? "質問できません" : "質問を入力してください..."}
+              disabled={isLoading || disabled}
+              rows={1}
+              className="flex-1 resize-none rounded-xl bg-gray-800 border border-gray-700 px-4 py-2.5 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+            <button
+              type="button"
+              onClick={handleSend}
+              disabled={isLoading || disabled || !input.trim()}
+              className={`shrink-0 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+                askAllMode ? "bg-amber-600 hover:bg-amber-700" : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {askAllMode ? "全員に送信" : "送信"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

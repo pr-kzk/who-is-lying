@@ -12,6 +12,13 @@ export type GameAction =
       content: string;
       triggeredAnxiety: boolean;
     }
+  | { type: "ADD_USER_MESSAGE_TO_ALL"; content: string }
+  | {
+      type: "ADD_ASSISTANT_MESSAGE_FOR_SUSPECT";
+      suspectId: string;
+      content: string;
+      triggeredAnxiety: boolean;
+    }
   | { type: "USE_HINT" }
   | { type: "ACCUSE_SUSPECT"; suspectId: string }
   | { type: "RESET_GAME" };
@@ -149,6 +156,31 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         chatHistories: {
           ...state.chatHistories,
           [state.currentSuspectId]: [...currentHistory, message],
+        },
+      };
+    }
+
+    case "ADD_USER_MESSAGE_TO_ALL": {
+      const message = createChatMessage("user", action.content, false);
+      const updatedHistories = { ...state.chatHistories };
+      for (const id of Object.keys(updatedHistories)) {
+        updatedHistories[id] = [...(updatedHistories[id] ?? []), message];
+      }
+      return {
+        ...state,
+        chatHistories: updatedHistories,
+        turnsUsed: state.turnsUsed + 2,
+      };
+    }
+
+    case "ADD_ASSISTANT_MESSAGE_FOR_SUSPECT": {
+      const message = createChatMessage("assistant", action.content, action.triggeredAnxiety);
+      const history = state.chatHistories[action.suspectId] ?? [];
+      return {
+        ...state,
+        chatHistories: {
+          ...state.chatHistories,
+          [action.suspectId]: [...history, message],
         },
       };
     }
