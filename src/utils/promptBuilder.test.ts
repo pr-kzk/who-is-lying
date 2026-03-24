@@ -41,7 +41,7 @@ const scenario: Scenario = {
   characters: [guiltyCharacter, innocentCharacter, innocentCharacter],
   guiltyCharacterId: "test-guilty",
   contradictionExplanation: "テスト用の矛盾説明",
-  hintText: "テスト用のヒント",
+  hints: ["テスト用のヒント"],
 };
 
 describe("buildGuiltyPrompt", () => {

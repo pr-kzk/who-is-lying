@@ -50,7 +50,7 @@ export const testScenario: Scenario = {
   ],
   guiltyCharacterId: "char-b",
   contradictionExplanation: "テスト矛盾説明",
-  hintText: "テストヒント",
+  hints: ["テストヒント1", "テストヒント2", "テストヒント3"],
 };
 
 /** Common action sequences */

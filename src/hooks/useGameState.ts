@@ -27,11 +27,20 @@ export function useGameState() {
   );
 
   const canUseHint = currentSuspectQuestionCount >= difficultyConfig.hintUnlockThreshold;
+  const canRevealNewHint =
+    canUseHint &&
+    state.hintsRevealed < state.scenario.hints.length &&
+    (state.lastHintTurn === null || state.turnsUsed > state.lastHintTurn);
+  const revealedHints = useMemo(
+    () => state.scenario.hints.slice(0, state.hintsRevealed),
+    [state.scenario.hints, state.hintsRevealed],
+  );
   const canAskAll = remainingTurns >= 2;
 
   const estimatedScore = useMemo(
-    () => calculateScore(state.turnsUsed, state.hintsUsed, true, difficultyConfig.scoreMultiplier),
-    [state.turnsUsed, state.hintsUsed, difficultyConfig.scoreMultiplier],
+    () =>
+      calculateScore(state.turnsUsed, state.hintsRevealed, true, difficultyConfig.scoreMultiplier),
+    [state.turnsUsed, state.hintsRevealed, difficultyConfig.scoreMultiplier],
   );
 
   return {
@@ -42,6 +51,8 @@ export function useGameState() {
     currentSuspect,
     currentChatHistory,
     canUseHint,
+    canRevealNewHint,
+    revealedHints,
     canAskAll,
     estimatedScore,
     currentSuspectQuestionCount,

@@ -15,7 +15,7 @@ describe("scenarios", () => {
     expect(scenario.crimeTime).toBeTruthy();
     expect(scenario.introParagraphs.length).toBeGreaterThan(0);
     expect(scenario.contradictionExplanation).toBeTruthy();
-    expect(scenario.hintText).toBeTruthy();
+    expect(scenario.hints.length).toBeGreaterThanOrEqual(3);
   });
 
   it.each(scenarios)("scenario '$id' has exactly 3 characters", (scenario) => {
