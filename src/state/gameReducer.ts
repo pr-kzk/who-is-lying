@@ -125,7 +125,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return {
         ...state,
         currentSuspectId: action.suspectId,
-        turnsUsed: state.turnsUsed + 1,
       };
     }
 

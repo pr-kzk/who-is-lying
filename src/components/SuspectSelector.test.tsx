@@ -2,7 +2,7 @@ import { describe, expect, it } from "vite-plus/test";
 import { screen, fireEvent } from "@testing-library/react";
 
 import { SuspectSelector } from "./SuspectSelector";
-import { renderWithGameSetup, INTERROGATION_ACTIONS, createTurnActions } from "../test/helpers";
+import { renderWithGameSetup, INTERROGATION_ACTIONS } from "../test/helpers";
 
 describe("SuspectSelector", () => {
   it("renders all character tabs", async () => {
@@ -41,27 +41,5 @@ describe("SuspectSelector", () => {
     fireEvent.click(screen.getByText("A太郎"));
 
     expect(aTab!.className).toBe(classBefore);
-  });
-
-  it("shows confirm modal when remainingTurns <= 3", async () => {
-    renderWithGameSetup(<SuspectSelector />, [...INTERROGATION_ACTIONS, ...createTurnActions(12)]);
-
-    await screen.findByText("B子");
-    fireEvent.click(screen.getByText("B子"));
-
-    expect(await screen.findByText("容疑者を切り替えますか？")).not.toBeNull();
-  });
-
-  it("confirming switch dispatches SELECT_SUSPECT", async () => {
-    renderWithGameSetup(<SuspectSelector />, [...INTERROGATION_ACTIONS, ...createTurnActions(12)]);
-
-    await screen.findByText("B子");
-    fireEvent.click(screen.getByText("B子"));
-
-    await screen.findByText("切り替える");
-    fireEvent.click(screen.getByText("切り替える"));
-
-    const bTab = screen.getByText("B子").closest("button");
-    expect(bTab!.className).toContain("border-rose-500");
   });
 });

@@ -82,12 +82,12 @@ describe("gameReducer", () => {
   });
 
   describe("SELECT_SUSPECT", () => {
-    it("increments turnsUsed when switching to a different suspect", () => {
+    it("does not increment turnsUsed when switching to a different suspect", () => {
       const state = getInterrogationState();
       const next = gameReducer(state, { type: "SELECT_SUSPECT", suspectId: "char-b" });
 
       expect(next.currentSuspectId).toBe("char-b");
-      expect(next.turnsUsed).toBe(state.turnsUsed + 1);
+      expect(next.turnsUsed).toBe(state.turnsUsed);
     });
 
     it("returns same state reference when selecting current suspect", () => {
@@ -218,7 +218,7 @@ describe("gameReducer", () => {
       const next = gameReducer(state, { type: "SELECT_SUSPECT", suspectId: "non-existent" });
 
       expect(next.currentSuspectId).toBe("non-existent");
-      expect(next.turnsUsed).toBe(state.turnsUsed + 1);
+      expect(next.turnsUsed).toBe(state.turnsUsed);
     });
 
     it("state immutability: original state is not mutated", () => {
