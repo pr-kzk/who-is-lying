@@ -1,14 +1,15 @@
 import { useMemo } from "react";
 
+import { DIFFICULTY_CONFIGS } from "../config/difficulty";
 import { useGame } from "../state/GameContext";
 import { calculateScore } from "../utils/scoreCalculator";
-
-const MAX_TURNS = 15;
 
 export function useGameState() {
   const { state, dispatch } = useGame();
 
-  const remainingTurns = MAX_TURNS - state.turnsUsed;
+  const difficultyConfig = DIFFICULTY_CONFIGS[state.difficulty];
+  const maxTurns = difficultyConfig.maxTurns;
+  const remainingTurns = maxTurns - state.turnsUsed;
 
   const currentSuspect = useMemo(
     () => state.scenario.characters.find((c) => c.id === state.currentSuspectId),
@@ -25,18 +26,18 @@ export function useGameState() {
     [currentChatHistory],
   );
 
-  const canUseHint = currentSuspectQuestionCount >= 5;
+  const canUseHint = currentSuspectQuestionCount >= difficultyConfig.hintUnlockThreshold;
 
   const estimatedScore = useMemo(
-    () => calculateScore(state.turnsUsed, state.hintsUsed, true),
-    [state.turnsUsed, state.hintsUsed],
+    () => calculateScore(state.turnsUsed, state.hintsUsed, true, difficultyConfig.scoreMultiplier),
+    [state.turnsUsed, state.hintsUsed, difficultyConfig.scoreMultiplier],
   );
 
   return {
     state,
     dispatch,
     remainingTurns,
-    maxTurns: MAX_TURNS,
+    maxTurns,
     currentSuspect,
     currentChatHistory,
     canUseHint,

@@ -90,6 +90,7 @@ describe("StartScreen", () => {
         date: "2026-03-19",
         scenarioId: "test",
         turnsUsed: 3,
+        difficulty: "normal",
       },
     ]);
 

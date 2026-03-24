@@ -33,6 +33,7 @@ describe("GameContext", () => {
         type: "START_GAME",
         scenario: testScenario,
         playerName: "テスト",
+        difficulty: "normal",
       });
     });
 

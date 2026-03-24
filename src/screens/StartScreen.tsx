@@ -1,22 +1,26 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { Layout } from "../components/Layout";
+import { DIFFICULTY_CONFIGS } from "../config/difficulty";
 import { defaultScenario } from "../data/scenarios";
 import { useGameState } from "../hooks/useGameState";
-import type { ScoreRecord } from "../types";
+import type { Difficulty, ScoreRecord } from "../types";
 import { getTopScores } from "../utils/storage";
+
+const DIFFICULTIES: Difficulty[] = ["easy", "normal", "hard"];
 
 export function StartScreen() {
   const { dispatch } = useGameState();
   const [playerName, setPlayerName] = useState("");
+  const [difficulty, setDifficulty] = useState<Difficulty>("normal");
 
   const topScores = useMemo(() => getTopScores(5), []);
 
   const handleStart = useCallback(() => {
     const trimmed = playerName.trim();
     if (!trimmed) return;
-    dispatch({ type: "START_GAME", scenario: defaultScenario, playerName: trimmed });
-  }, [dispatch, playerName]);
+    dispatch({ type: "START_GAME", scenario: defaultScenario, playerName: trimmed, difficulty });
+  }, [dispatch, playerName, difficulty]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -54,6 +58,32 @@ export function StartScreen() {
             autoFocus
             className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-shadow"
           />
+
+          {/* Difficulty selector */}
+          <div className="mt-4">
+            <p className="text-sm text-gray-400 mb-2">難易度を選択</p>
+            <div className="grid grid-cols-3 gap-2">
+              {DIFFICULTIES.map((d) => {
+                const config = DIFFICULTY_CONFIGS[d];
+                const isActive = difficulty === d;
+                return (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setDifficulty(d)}
+                    className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+                      isActive
+                        ? "border-amber-500 bg-amber-600/20 text-amber-300"
+                        : "border-gray-700 bg-gray-800 text-gray-400 hover:border-gray-600"
+                    }`}
+                  >
+                    <div className="font-bold">{config.label}</div>
+                    <div className="text-xs mt-0.5 opacity-70">{config.description}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           <button
             type="button"

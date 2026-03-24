@@ -9,6 +9,7 @@ function getInterrogationState() {
     type: "START_GAME",
     scenario: testScenario,
     playerName: "P",
+    difficulty: "normal",
   });
   return gameReducer(state, { type: "START_INTERROGATION" });
 }
@@ -40,6 +41,7 @@ describe("gameReducer", () => {
         type: "START_GAME",
         scenario: testScenario,
         playerName: "テストプレイヤー",
+        difficulty: "normal",
       });
 
       expect(state.phase).toBe("intro");
@@ -54,6 +56,7 @@ describe("gameReducer", () => {
         type: "START_GAME",
         scenario: testScenario,
         playerName: "P",
+        difficulty: "normal",
       });
 
       expect(Object.keys(state.chatHistories)).toHaveLength(3);
@@ -69,6 +72,7 @@ describe("gameReducer", () => {
         type: "START_GAME",
         scenario: testScenario,
         playerName: "P",
+        difficulty: "normal",
       });
       const state = gameReducer(gameStarted, { type: "START_INTERROGATION" });
 
@@ -152,6 +156,7 @@ describe("gameReducer", () => {
         type: "START_GAME",
         scenario: testScenario,
         playerName: "P",
+        difficulty: "normal",
       });
       const next = gameReducer(state, { type: "USE_HINT" });
 
@@ -221,6 +226,7 @@ describe("gameReducer", () => {
         type: "START_GAME",
         scenario: testScenario,
         playerName: "P",
+        difficulty: "normal",
       });
 
       const originalPhase = state.phase;
@@ -249,6 +255,7 @@ describe("gameReducer", () => {
         type: "START_GAME",
         scenario: testScenario,
         playerName: "P",
+        difficulty: "normal",
       });
 
       // @ts-expect-error Testing unknown action type

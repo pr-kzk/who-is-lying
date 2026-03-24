@@ -48,7 +48,7 @@ export function InterrogationScreen() {
 
       dispatch({ type: "ADD_USER_MESSAGE", content: userMessage });
 
-      const systemPrompt = buildSystemPrompt(currentSuspect, state.scenario);
+      const systemPrompt = buildSystemPrompt(currentSuspect, state.scenario, state.difficulty);
 
       try {
         // Pass currentChatHistory (without the new message) because

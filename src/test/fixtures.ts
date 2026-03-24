@@ -55,12 +55,12 @@ export const testScenario: Scenario = {
 
 /** Common action sequences */
 export const INTERROGATION_ACTIONS: GameAction[] = [
-  { type: "START_GAME", scenario: testScenario, playerName: "テスト" },
+  { type: "START_GAME", scenario: testScenario, playerName: "テスト", difficulty: "normal" },
   { type: "START_INTERROGATION" },
 ];
 
 export const INTRO_ACTIONS: GameAction[] = [
-  { type: "START_GAME", scenario: testScenario, playerName: "テスト" },
+  { type: "START_GAME", scenario: testScenario, playerName: "テスト", difficulty: "normal" },
 ];
 
 export function createTurnActions(count: number): GameAction[] {

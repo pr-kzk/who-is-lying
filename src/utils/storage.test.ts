@@ -14,6 +14,7 @@ function createRecord(overrides: Partial<ScoreRecord> = {}): ScoreRecord {
     date: "2026-03-19",
     scenarioId: "test",
     turnsUsed: 5,
+    difficulty: "normal",
     ...overrides,
   };
 }

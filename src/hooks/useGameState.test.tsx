@@ -13,6 +13,7 @@ function setupGame() {
       type: "START_GAME",
       scenario: testScenario,
       playerName: "テスト",
+      difficulty: "normal",
     });
   });
   act(() => {

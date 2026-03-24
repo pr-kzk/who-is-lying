@@ -1,8 +1,9 @@
-import type { ChatMessage, GameState, Scenario } from "../types/index";
+import type { ChatMessage, Difficulty, GameState, Scenario } from "../types/index";
+import { DIFFICULTY_CONFIGS } from "../config/difficulty";
 import { calculateScore } from "../utils/scoreCalculator";
 
 export type GameAction =
-  | { type: "START_GAME"; scenario: Scenario; playerName: string }
+  | { type: "START_GAME"; scenario: Scenario; playerName: string; difficulty: Difficulty }
   | { type: "START_INTERROGATION" }
   | { type: "SELECT_SUSPECT"; suspectId: string }
   | { type: "ADD_USER_MESSAGE"; content: string }
@@ -76,6 +77,7 @@ export const initialGameState: GameState = {
   isCorrect: null,
   score: null,
   playerName: "",
+  difficulty: "normal",
 };
 
 function createChatMessage(
@@ -103,6 +105,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         phase: "intro",
         scenario: action.scenario,
         playerName: action.playerName,
+        difficulty: action.difficulty,
         chatHistories,
       };
     }
@@ -160,7 +163,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case "ACCUSE_SUSPECT": {
       const isCorrect = action.suspectId === state.scenario.guiltyCharacterId;
-      const score = calculateScore(state.turnsUsed, state.hintsUsed, isCorrect);
+      const { scoreMultiplier } = DIFFICULTY_CONFIGS[state.difficulty];
+      const score = calculateScore(state.turnsUsed, state.hintsUsed, isCorrect, scoreMultiplier);
       return {
         ...state,
         phase: "result",

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
 import { Layout } from "../components/Layout";
+import { DIFFICULTY_CONFIGS } from "../config/difficulty";
 import { useGameState } from "../hooks/useGameState";
 import type { CharacterData, ScoreRecord } from "../types";
 import { getRank } from "../utils/scoreCalculator";
@@ -14,12 +15,14 @@ export function ResultScreen() {
   const score = state.score ?? 0;
   const turnsUsed = state.turnsUsed;
   const hintsUsed = state.hintsUsed;
+  const difficultyConfig = DIFFICULTY_CONFIGS[state.difficulty];
 
   const { rank, title } = useMemo(() => getRank(score), [score]);
 
   const turnPenalty = turnsUsed * 50;
   const hintPenalty = hintsUsed * 150;
   const correctBonus = isCorrect ? 500 : 0;
+  const rawScore = Math.max(0, 1000 - turnPenalty - hintPenalty + correctBonus);
 
   const accusedCharacter = useMemo(
     () => state.scenario.characters.find((c: CharacterData) => c.id === state.accusedSuspectId),
@@ -47,9 +50,10 @@ export function ResultScreen() {
       date: new Date().toISOString(),
       scenarioId: state.scenario.id,
       turnsUsed,
+      difficulty: state.difficulty,
     };
     saveScore(record);
-  }, [score, rank, title, state.playerName, state.scenario.id, turnsUsed]);
+  }, [score, rank, title, state.playerName, state.scenario.id, turnsUsed, state.difficulty]);
 
   const topScores = useMemo(() => getTopScores(5), []);
 
@@ -123,10 +127,25 @@ export function ResultScreen() {
                     +{correctBonus}
                   </span>
                 </div>
+                {difficultyConfig.scoreMultiplier !== 1.0 && (
+                  <div className="flex justify-between text-gray-300">
+                    <span>難易度倍率（{difficultyConfig.label}）</span>
+                    <span
+                      className={`font-mono ${difficultyConfig.scoreMultiplier > 1 ? "text-green-400" : "text-yellow-400"}`}
+                    >
+                      x{difficultyConfig.scoreMultiplier}
+                    </span>
+                  </div>
+                )}
                 <div className="border-t border-gray-700 pt-3 flex justify-between text-gray-100 font-bold text-lg">
                   <span>合計</span>
                   <span className="font-mono text-amber-400">{score}</span>
                 </div>
+                {difficultyConfig.scoreMultiplier !== 1.0 && (
+                  <div className="text-xs text-gray-500 text-right">
+                    ({rawScore} x {difficultyConfig.scoreMultiplier} = {score})
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -186,6 +205,17 @@ export function ResultScreen() {
                       <span className="text-gray-200">{record.playerName}</span>
                     </div>
                     <div className="flex items-center gap-3">
+                      {record.difficulty && record.difficulty !== "normal" && (
+                        <span
+                          className={`text-xs px-1.5 py-0.5 rounded ${
+                            record.difficulty === "easy"
+                              ? "bg-green-900/50 text-green-400"
+                              : "bg-red-900/50 text-red-400"
+                          }`}
+                        >
+                          {DIFFICULTY_CONFIGS[record.difficulty].label}
+                        </span>
+                      )}
                       <span className="text-xs text-gray-500">{record.rank}</span>
                       <span className="text-amber-400 font-bold w-16 text-right font-mono">
                         {record.score}

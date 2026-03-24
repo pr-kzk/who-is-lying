@@ -1,5 +1,7 @@
 export type GamePhase = "start" | "intro" | "interrogation" | "accusation" | "result";
 
+export type Difficulty = "easy" | "normal" | "hard";
+
 export interface Character {
   id: string;
   name: string;
@@ -56,6 +58,7 @@ export interface GameState {
   isCorrect: boolean | null;
   score: number | null;
   playerName: string;
+  difficulty: Difficulty;
 }
 
 export interface ScoreRecord {
@@ -66,4 +69,5 @@ export interface ScoreRecord {
   date: string;
   scenarioId: string;
   turnsUsed: number;
+  difficulty: Difficulty;
 }

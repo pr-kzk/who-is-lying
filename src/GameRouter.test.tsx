@@ -40,7 +40,7 @@ describe("GameRouter", () => {
 
   it("renders IntroScreen when phase=intro", async () => {
     renderWithGameSetup(<GameRouter />, [
-      { type: "START_GAME", scenario: testScenario, playerName: "テスト" },
+      { type: "START_GAME", scenario: testScenario, playerName: "テスト", difficulty: "normal" },
     ]);
     expect(await screen.findByText("スキップ")).not.toBeNull();
   });

@@ -45,7 +45,7 @@ const scenario: Scenario = {
 };
 
 describe("buildGuiltyPrompt", () => {
-  const prompt = buildGuiltyPrompt(guiltyCharacter, scenario);
+  const prompt = buildGuiltyPrompt(guiltyCharacter, scenario, "normal");
 
   it("contains character details", () => {
     expect(prompt).toContain("山田太郎");
@@ -75,7 +75,7 @@ describe("buildGuiltyPrompt", () => {
 });
 
 describe("buildInnocentPrompt", () => {
-  const prompt = buildInnocentPrompt(innocentCharacter, scenario);
+  const prompt = buildInnocentPrompt(innocentCharacter, scenario, "normal");
 
   it("contains character details", () => {
     expect(prompt).toContain("佐藤花子");
@@ -100,12 +100,12 @@ describe("buildInnocentPrompt", () => {
 
 describe("buildSystemPrompt", () => {
   it("dispatches to guilty prompt for guilty character", () => {
-    const prompt = buildSystemPrompt(guiltyCharacter, scenario);
+    const prompt = buildSystemPrompt(guiltyCharacter, scenario, "normal");
     expect(prompt).toContain("真犯人");
   });
 
   it("dispatches to innocent prompt for innocent character", () => {
-    const prompt = buildSystemPrompt(innocentCharacter, scenario);
+    const prompt = buildSystemPrompt(innocentCharacter, scenario, "normal");
     expect(prompt).toContain("無実");
     expect(prompt).not.toContain("真犯人");
   });
