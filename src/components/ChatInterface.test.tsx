@@ -25,6 +25,7 @@ describe("ChatInterface", () => {
         isLoading={false}
         disabled={false}
         suspectName="田中"
+        streamingContent={null}
       />,
     );
     expect(screen.getByText("田中 に質問してみましょう")).not.toBeNull();
@@ -39,6 +40,7 @@ describe("ChatInterface", () => {
         isLoading={false}
         disabled={false}
         suspectName="田中"
+        streamingContent={null}
       />,
     );
     expect(screen.getByText("アリバイは？")).not.toBeNull();
@@ -53,13 +55,14 @@ describe("ChatInterface", () => {
         isLoading={false}
         disabled={false}
         suspectName="田中"
+        streamingContent={null}
       />,
     );
     expect(screen.getByText("自宅にいました")).not.toBeNull();
     expect(screen.getByText("田中")).not.toBeNull();
   });
 
-  it("shows typing indicator when isLoading=true", () => {
+  it("shows typing indicator when isLoading=true and no streaming content", () => {
     const { container } = render(
       <ChatInterface
         messages={[]}
@@ -67,10 +70,25 @@ describe("ChatInterface", () => {
         isLoading={true}
         disabled={false}
         suspectName="田中"
+        streamingContent={null}
       />,
     );
     const dots = container.querySelectorAll("span.rounded-full");
     expect(dots.length).toBe(3);
+  });
+
+  it("shows streaming content instead of typing indicator", () => {
+    render(
+      <ChatInterface
+        messages={[]}
+        onSend={vi.fn()}
+        isLoading={true}
+        disabled={false}
+        suspectName="田中"
+        streamingContent="途中の回答"
+      />,
+    );
+    expect(screen.getByText("途中の回答")).not.toBeNull();
   });
 
   it("does not show typing indicator when isLoading=false", () => {
@@ -81,6 +99,7 @@ describe("ChatInterface", () => {
         isLoading={false}
         disabled={false}
         suspectName="田中"
+        streamingContent={null}
       />,
     );
     const dots = container.querySelectorAll("span.rounded-full");
@@ -96,6 +115,7 @@ describe("ChatInterface", () => {
         isLoading={false}
         disabled={false}
         suspectName="田中"
+        streamingContent={null}
       />,
     );
 
@@ -115,6 +135,7 @@ describe("ChatInterface", () => {
         isLoading={false}
         disabled={false}
         suspectName="田中"
+        streamingContent={null}
       />,
     );
 
@@ -133,6 +154,7 @@ describe("ChatInterface", () => {
         isLoading={false}
         disabled={false}
         suspectName="田中"
+        streamingContent={null}
       />,
     );
 
@@ -153,6 +175,7 @@ describe("ChatInterface", () => {
         isLoading={false}
         disabled={true}
         suspectName="田中"
+        streamingContent={null}
       />,
     );
 
@@ -172,6 +195,7 @@ describe("ChatInterface", () => {
         isLoading={false}
         disabled={false}
         suspectName="田中"
+        streamingContent={null}
       />,
     );
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { ChatMessage } from "../types";
 
@@ -8,6 +8,7 @@ interface ChatInterfaceProps {
   isLoading: boolean;
   disabled: boolean;
   suspectName: string;
+  streamingContent: string | null;
 }
 
 function TypingIndicator() {
@@ -30,13 +31,36 @@ export function ChatInterface({
   isLoading,
   disabled,
   suspectName,
+  streamingContent,
 }: ChatInterfaceProps) {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
+  const isNearBottom = useCallback(() => {
+    const el = scrollAreaRef.current;
+    if (!el) return true;
+    return el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+  }, []);
+
+  // Scroll on new messages or loading state change.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length, isLoading]);
+    if (isNearBottom()) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages.length, isLoading, isNearBottom]);
+
+  // Scroll during streaming — throttled to avoid excessive calls.
+  const lastScrollRef = useRef(0);
+  useEffect(() => {
+    if (!streamingContent) return;
+    const now = Date.now();
+    if (now - lastScrollRef.current < 100) return;
+    lastScrollRef.current = now;
+    if (isNearBottom()) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [streamingContent, isNearBottom]);
 
   function handleSend() {
     const trimmed = input.trim();
@@ -55,8 +79,8 @@ export function ChatInterface({
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-        {messages.length === 0 && (
+      <div ref={scrollAreaRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+        {messages.length === 0 && !isLoading && (
           <p className="text-center text-gray-600 text-sm py-8">
             {suspectName} に質問してみましょう
           </p>
@@ -67,9 +91,7 @@ export function ChatInterface({
           return (
             <div
               key={`${index}-${msg.timestamp}`}
-              className={`flex animate-[fade-in_0.3s_ease-out] ${
-                isUser ? "justify-end" : "justify-start"
-              }`}
+              className={`flex ${isUser ? "justify-end animate-[fade-in_0.3s_ease-out]" : "justify-start"}`}
             >
               <div
                 className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
@@ -86,9 +108,14 @@ export function ChatInterface({
         })}
 
         {isLoading && (
-          <div className="flex justify-start animate-[fade-in_0.3s_ease-out]">
-            <div className="bg-gray-800 rounded-2xl rounded-bl-md">
-              <TypingIndicator />
+          <div className="flex justify-start animate-[fade-in_0.2s_ease-out]">
+            <div className="max-w-[80%] bg-gray-800 text-gray-200 rounded-2xl rounded-bl-md px-4 py-2.5 text-sm leading-relaxed">
+              <p className="text-xs text-gray-500 mb-1 font-medium">{suspectName}</p>
+              {streamingContent ? (
+                <p className="whitespace-pre-wrap">{streamingContent}</p>
+              ) : (
+                <TypingIndicator />
+              )}
             </div>
           </div>
         )}

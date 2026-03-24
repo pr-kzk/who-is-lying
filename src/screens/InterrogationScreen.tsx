@@ -15,7 +15,7 @@ import { buildSystemPrompt } from "../utils/promptBuilder";
 export function InterrogationScreen() {
   const { state, dispatch, remainingTurns, currentSuspect, currentChatHistory, canUseHint } =
     useGameState();
-  const { sendMessage, isLoading, error, clearError } = useLLMChat();
+  const { sendMessage, isLoading, error, clearError, streamingContent } = useLLMChat();
 
   const [isAnxious, setIsAnxious] = useState(false);
   const anxietyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -117,6 +117,7 @@ export function InterrogationScreen() {
               isLoading={isLoading}
               disabled={inputDisabled}
               suspectName={currentSuspect.name}
+              streamingContent={streamingContent}
             />
           </div>
         </div>

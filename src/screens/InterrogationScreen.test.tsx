@@ -10,6 +10,7 @@ vi.mock("../hooks/useLLMChat", () => ({
     isLoading: false,
     error: null,
     clearError: vi.fn(),
+    streamingContent: null,
   }),
 }));
 
@@ -30,6 +31,7 @@ describe("InterrogationScreen", () => {
       isLoading: false,
       error: null,
       clearError: vi.fn(),
+      streamingContent: null,
     });
   });
 
@@ -79,6 +81,7 @@ describe("InterrogationScreen", () => {
       isLoading: false,
       error: "API接続エラー",
       clearError: vi.fn(),
+      streamingContent: null,
     });
 
     renderWithGameSetup(<InterrogationScreen />, INTERROGATION_ACTIONS);

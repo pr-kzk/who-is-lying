@@ -4,12 +4,12 @@ import { act, renderHook } from "@testing-library/react";
 import { useLLMChat } from "./useLLMChat";
 
 vi.mock("../api/llm", () => ({
-  callLLM: vi.fn(),
+  streamLLM: vi.fn(),
 }));
 
-import { callLLM } from "../api/llm";
+import { streamLLM } from "../api/llm";
 
-const mockCallLLM = vi.mocked(callLLM);
+const mockStreamLLM = vi.mocked(streamLLM);
 
 describe("useLLMChat", () => {
   beforeEach(() => {
@@ -20,6 +20,7 @@ describe("useLLMChat", () => {
     const { result } = renderHook(() => useLLMChat());
     expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBeNull();
+    expect(result.current.streamingContent).toBeNull();
   });
 
   it("isLoading becomes true during sendMessage and false after", async () => {
@@ -27,7 +28,7 @@ describe("useLLMChat", () => {
     const promise = new Promise<string>((resolve) => {
       resolvePromise = resolve;
     });
-    mockCallLLM.mockReturnValueOnce(promise);
+    mockStreamLLM.mockReturnValueOnce(promise);
 
     const { result } = renderHook(() => useLLMChat());
 
@@ -47,7 +48,7 @@ describe("useLLMChat", () => {
   });
 
   it("returns response string on success", async () => {
-    mockCallLLM.mockResolvedValueOnce("回答です");
+    mockStreamLLM.mockResolvedValueOnce("回答です");
 
     const { result } = renderHook(() => useLLMChat());
 
@@ -60,7 +61,7 @@ describe("useLLMChat", () => {
   });
 
   it("sets error state on API failure", async () => {
-    mockCallLLM.mockRejectedValueOnce(new Error("Network error"));
+    mockStreamLLM.mockRejectedValueOnce(new Error("Network error"));
 
     const { result } = renderHook(() => useLLMChat());
 
@@ -77,7 +78,7 @@ describe("useLLMChat", () => {
   });
 
   it("clearError resets error to null", async () => {
-    mockCallLLM.mockRejectedValueOnce(new Error("error"));
+    mockStreamLLM.mockRejectedValueOnce(new Error("error"));
 
     const { result } = renderHook(() => useLLMChat());
 
@@ -99,7 +100,7 @@ describe("useLLMChat", () => {
   });
 
   it("does not set error for AbortError", async () => {
-    mockCallLLM.mockRejectedValueOnce(new DOMException("aborted", "AbortError"));
+    mockStreamLLM.mockRejectedValueOnce(new DOMException("aborted", "AbortError"));
 
     const { result } = renderHook(() => useLLMChat());
 
@@ -116,8 +117,8 @@ describe("useLLMChat", () => {
 
   it("aborts previous request when sending new one", async () => {
     const firstPromise = new Promise<string>(() => {});
-    mockCallLLM.mockReturnValueOnce(firstPromise);
-    mockCallLLM.mockResolvedValueOnce("second response");
+    mockStreamLLM.mockReturnValueOnce(firstPromise);
+    mockStreamLLM.mockResolvedValueOnce("second response");
 
     const { result } = renderHook(() => useLLMChat());
 
@@ -126,8 +127,8 @@ describe("useLLMChat", () => {
       void result.current.sendMessage("prompt", [], "first");
     });
 
-    // Verify that the abort signal was passed to callLLM
-    const firstSignal = mockCallLLM.mock.calls[0][2] as AbortSignal;
+    // Verify that the abort signal was passed to streamLLM
+    const firstSignal = mockStreamLLM.mock.calls[0][3] as AbortSignal;
 
     // Send second request (should abort first)
     await act(async () => {
@@ -138,7 +139,7 @@ describe("useLLMChat", () => {
   });
 
   it("cleans up abort controller on unmount", () => {
-    mockCallLLM.mockReturnValueOnce(new Promise<string>(() => {}));
+    mockStreamLLM.mockReturnValueOnce(new Promise<string>(() => {}));
 
     const { result, unmount } = renderHook(() => useLLMChat());
 
@@ -146,7 +147,7 @@ describe("useLLMChat", () => {
       void result.current.sendMessage("prompt", [], "q");
     });
 
-    const signal = mockCallLLM.mock.calls[0][2] as AbortSignal;
+    const signal = mockStreamLLM.mock.calls[0][3] as AbortSignal;
     expect(signal.aborted).toBe(false);
 
     unmount();

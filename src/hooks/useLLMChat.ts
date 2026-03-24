@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { callLLM } from "../api/llm";
+import { streamLLM } from "../api/llm";
 import type { ChatMessage } from "../types/index";
 
 export function useLLMChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [streamingContent, setStreamingContent] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const clearError = useCallback(() => {
@@ -24,6 +25,7 @@ export function useLLMChat() {
 
       setIsLoading(true);
       setError(null);
+      setStreamingContent(null);
 
       try {
         const messages = [
@@ -34,7 +36,16 @@ export function useLLMChat() {
           { role: "user" as const, content: userMessage },
         ];
 
-        const response = await callLLM(systemPrompt, messages, controller.signal);
+        let accumulated = "";
+        const response = await streamLLM(
+          systemPrompt,
+          messages,
+          (chunk) => {
+            accumulated += chunk;
+            setStreamingContent(accumulated);
+          },
+          controller.signal,
+        );
         return response;
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {
@@ -46,6 +57,7 @@ export function useLLMChat() {
       } finally {
         if (abortControllerRef.current === controller) {
           setIsLoading(false);
+          setStreamingContent(null);
         }
       }
     },
@@ -58,5 +70,5 @@ export function useLLMChat() {
     };
   }, []);
 
-  return { sendMessage, isLoading, error, clearError };
+  return { sendMessage, isLoading, error, clearError, streamingContent };
 }
