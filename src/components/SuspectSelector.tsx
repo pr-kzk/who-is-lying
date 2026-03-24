@@ -15,7 +15,11 @@ const colorMap: Record<string, string> = {
   orange: "border-orange-500",
 };
 
-export function SuspectSelector() {
+interface SuspectSelectorProps {
+  askAllLoading?: Record<string, boolean>;
+}
+
+export function SuspectSelector({ askAllLoading }: SuspectSelectorProps) {
   const { state, dispatch } = useGameState();
 
   function handleSelect(suspectId: string) {
@@ -50,6 +54,9 @@ export function SuspectSelector() {
             <span className={`text-xs ${isActive ? "text-gray-400" : "text-gray-600"}`}>
               {character.job} / {character.age}
             </span>
+            {askAllLoading?.[character.id] && (
+              <span className="absolute top-1 left-2 w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            )}
             {messageCount > 0 && (
               <span className="absolute top-1 right-2 bg-gray-700 text-gray-300 text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 {messageCount}
