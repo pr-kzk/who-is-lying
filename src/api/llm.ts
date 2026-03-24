@@ -129,3 +129,11 @@ export async function streamLLM(
   }
   return streamLocal(systemPrompt, messages, onChunk, signal);
 }
+
+export async function callLLM(
+  systemPrompt: string,
+  messages: Array<{ role: "user" | "assistant"; content: string }>,
+  signal?: AbortSignal,
+): Promise<string> {
+  return streamLLM(systemPrompt, messages, () => {}, signal);
+}

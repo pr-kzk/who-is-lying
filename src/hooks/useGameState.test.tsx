@@ -47,30 +47,35 @@ describe("useGameState", () => {
 
   it("returns currentChatHistory for the current suspect", () => {
     const result = setupGame();
-    expect(result.current.currentChatHistory).toEqual([]);
+    // Initial auto-question + alibi response
+    expect(result.current.currentChatHistory).toHaveLength(2);
+    expect(result.current.currentChatHistory[0].role).toBe("user");
+    expect(result.current.currentChatHistory[1].role).toBe("assistant");
 
     act(() => {
       result.current.dispatch({ type: "ADD_USER_MESSAGE", content: "質問" });
     });
-    expect(result.current.currentChatHistory).toHaveLength(1);
+    expect(result.current.currentChatHistory).toHaveLength(3);
   });
 
-  it("returns canUseHint=false when fewer than 5 questions", () => {
+  it("returns canUseHint=false when fewer than 5 questions (including auto-question)", () => {
     const result = setupGame();
 
+    // Auto-question counts as 1, so 3 more = 4 total
     act(() => {
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 3; i++) {
         result.current.dispatch({ type: "ADD_USER_MESSAGE", content: `q${i}` });
       }
     });
     expect(result.current.canUseHint).toBe(false);
   });
 
-  it("returns canUseHint=true when 5 or more questions", () => {
+  it("returns canUseHint=true when 5 or more questions (including auto-question)", () => {
     const result = setupGame();
 
+    // Auto-question counts as 1, so 4 more = 5 total
     act(() => {
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 4; i++) {
         result.current.dispatch({ type: "ADD_USER_MESSAGE", content: `q${i}` });
       }
     });
@@ -79,7 +84,8 @@ describe("useGameState", () => {
 
   it("returns correct currentSuspectQuestionCount", () => {
     const result = setupGame();
-    expect(result.current.currentSuspectQuestionCount).toBe(0);
+    // Auto-question counts as 1
+    expect(result.current.currentSuspectQuestionCount).toBe(1);
 
     act(() => {
       result.current.dispatch({ type: "ADD_USER_MESSAGE", content: "q1" });
@@ -91,8 +97,8 @@ describe("useGameState", () => {
       result.current.dispatch({ type: "ADD_USER_MESSAGE", content: "q2" });
     });
 
-    // Only user messages count
-    expect(result.current.currentSuspectQuestionCount).toBe(2);
+    // Auto-question (1) + 2 user messages = 3
+    expect(result.current.currentSuspectQuestionCount).toBe(3);
   });
 
   it("returns estimatedScore assuming correct answer", () => {

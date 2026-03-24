@@ -60,9 +60,9 @@ describe("InterrogationScreen", () => {
     expect(await screen.findByText(/犯人を指名する/)).not.toBeNull();
   });
 
-  it("renders chat placeholder for current suspect", async () => {
+  it("renders initial alibi message for current suspect", async () => {
     renderWithGameSetup(<InterrogationScreen />, INTERROGATION_ACTIONS);
-    expect(await screen.findByText("A太郎 に質問してみましょう")).not.toBeNull();
+    expect(await screen.findByText("自宅にいた")).not.toBeNull();
   });
 
   it("disables input when remainingTurns <= 0", async () => {

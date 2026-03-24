@@ -12,6 +12,8 @@ interface ChatInterfaceProps {
   askAllMode: boolean;
   onToggleAskAll: () => void;
   canAskAll: boolean;
+  suggestions?: string[];
+  isLoadingSuggestions?: boolean;
 }
 
 function TypingIndicator() {
@@ -38,6 +40,8 @@ export function ChatInterface({
   askAllMode,
   onToggleAskAll,
   canAskAll,
+  suggestions = [],
+  isLoadingSuggestions = false,
 }: ChatInterfaceProps) {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -146,6 +150,28 @@ export function ChatInterface({
               全員に質問（2ターン）
             </button>
           </div>
+          {/* Suggestion chips (easy mode) */}
+          {(suggestions.length > 0 || isLoadingSuggestions) && !isLoading && !disabled && (
+            <div className="flex flex-wrap gap-2">
+              {isLoadingSuggestions
+                ? [0, 1, 2].map((i) => (
+                    <span
+                      key={i}
+                      className="h-8 w-40 rounded-lg bg-gray-800 border border-gray-700 animate-pulse"
+                    />
+                  ))
+                : suggestions.map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      type="button"
+                      onClick={() => onSend(suggestion)}
+                      className="rounded-lg border border-gray-600 bg-gray-800/60 px-3 py-1.5 text-xs text-gray-300 hover:bg-gray-700 hover:border-gray-500 hover:text-gray-100 transition-colors text-left"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+            </div>
+          )}
           <div className="flex items-end gap-2">
             <textarea
               value={input}

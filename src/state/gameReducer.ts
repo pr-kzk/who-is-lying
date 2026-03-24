@@ -70,7 +70,7 @@ const dummyScenario: Scenario = {
   ],
   guiltyCharacterId: "",
   contradictionExplanation: "",
-  hintText: "",
+  hints: [],
 };
 
 export const initialGameState: GameState = {
@@ -79,7 +79,8 @@ export const initialGameState: GameState = {
   currentSuspectId: "",
   chatHistories: {},
   turnsUsed: 0,
-  hintsUsed: 0,
+  hintsRevealed: 0,
+  lastHintTurn: null,
   accusedSuspectId: null,
   isCorrect: null,
   score: null,
@@ -118,10 +119,19 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     }
 
     case "START_INTERROGATION": {
+      const chatHistories = { ...state.chatHistories };
+      for (const character of state.scenario.characters) {
+        const alibi = character.guilty ? character.alibiLie : character.alibiTruth;
+        chatHistories[character.id] = [
+          createChatMessage("user", "犯行時刻は何をしていましたか？", false),
+          createChatMessage("assistant", alibi, false),
+        ];
+      }
       return {
         ...state,
         phase: "interrogation",
         currentSuspectId: state.scenario.characters[0].id,
+        chatHistories,
       };
     }
 
@@ -188,14 +198,20 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case "USE_HINT": {
       return {
         ...state,
-        hintsUsed: state.hintsUsed + 1,
+        hintsRevealed: state.hintsRevealed + 1,
+        lastHintTurn: state.turnsUsed,
       };
     }
 
     case "ACCUSE_SUSPECT": {
       const isCorrect = action.suspectId === state.scenario.guiltyCharacterId;
       const { scoreMultiplier } = DIFFICULTY_CONFIGS[state.difficulty];
-      const score = calculateScore(state.turnsUsed, state.hintsUsed, isCorrect, scoreMultiplier);
+      const score = calculateScore(
+        state.turnsUsed,
+        state.hintsRevealed,
+        isCorrect,
+        scoreMultiplier,
+      );
       return {
         ...state,
         phase: "result",

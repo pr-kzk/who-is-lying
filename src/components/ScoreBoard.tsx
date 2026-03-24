@@ -33,7 +33,7 @@ export function ScoreBoard() {
         {/* Hints used */}
         <div className="flex items-center gap-2 text-sm">
           <span className="text-gray-400">ヒント使用回数</span>
-          <span className="font-bold text-lg text-purple-400">{state.hintsUsed}</span>
+          <span className="font-bold text-lg text-purple-400">{state.hintsRevealed}</span>
         </div>
       </div>
     </div>

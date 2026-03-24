@@ -14,7 +14,7 @@ export function ResultScreen() {
   const isCorrect = state.isCorrect ?? false;
   const score = state.score ?? 0;
   const turnsUsed = state.turnsUsed;
-  const hintsUsed = state.hintsUsed;
+  const hintsUsed = state.hintsRevealed;
   const difficultyConfig = DIFFICULTY_CONFIGS[state.difficulty];
 
   const { rank, title } = useMemo(() => getRank(score), [score]);

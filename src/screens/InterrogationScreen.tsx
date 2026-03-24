@@ -10,6 +10,7 @@ import { ScoreBoard } from "../components/ScoreBoard";
 import { SuspectSelector } from "../components/SuspectSelector";
 import { useLLMChat } from "../hooks/useLLMChat";
 import { useGameState } from "../hooks/useGameState";
+import { useSuggestions } from "../hooks/useSuggestions";
 import { detectAnxiety } from "../utils/anxietyDetector";
 import { buildSystemPrompt } from "../utils/promptBuilder";
 
@@ -21,9 +22,17 @@ export function InterrogationScreen() {
     currentSuspect,
     currentChatHistory,
     canUseHint,
+    canRevealNewHint,
+    revealedHints,
     canAskAll,
   } = useGameState();
   const { sendMessage, isLoading, error, clearError, streamingContent } = useLLMChat();
+  const { suggestions, isLoadingSuggestions } = useSuggestions(
+    state.scenario,
+    currentSuspect,
+    currentChatHistory,
+    state.difficulty,
+  );
 
   const [isAnxious, setIsAnxious] = useState(false);
   const anxietyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -248,6 +257,8 @@ export function InterrogationScreen() {
               askAllMode={askAllMode}
               onToggleAskAll={handleToggleAskAll}
               canAskAll={canAskAll && !isAskAllActive}
+              suggestions={suggestions}
+              isLoadingSuggestions={isLoadingSuggestions}
             />
           </div>
         </div>
@@ -264,9 +275,11 @@ export function InterrogationScreen() {
             </button>
             <HintButton
               canUseHint={canUseHint}
-              hintText={state.scenario.hintText}
-              onUseHint={handleUseHint}
-              hintsUsed={state.hintsUsed}
+              canRevealNewHint={canRevealNewHint}
+              revealedHints={revealedHints}
+              totalHints={state.scenario.hints.length}
+              onRevealHint={handleUseHint}
+              hintsRevealed={state.hintsRevealed}
             />
             <AccuseButton
               characters={state.scenario.characters}

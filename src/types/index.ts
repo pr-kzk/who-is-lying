@@ -37,7 +37,7 @@ export interface Scenario {
   characters: [CharacterData, CharacterData, CharacterData];
   guiltyCharacterId: string;
   contradictionExplanation: string;
-  hintText: string; // hint shown when player uses hint button
+  hints: string[]; // progressive hints shown when player uses hint button
 }
 
 export interface ChatMessage {
@@ -53,7 +53,8 @@ export interface GameState {
   currentSuspectId: string;
   chatHistories: Record<string, ChatMessage[]>;
   turnsUsed: number;
-  hintsUsed: number;
+  hintsRevealed: number;
+  lastHintTurn: number | null;
   accusedSuspectId: string | null;
   isCorrect: boolean | null;
   score: number | null;

@@ -16,6 +16,12 @@ function createMessage(role: "user" | "assistant", content: string): ChatMessage
   return { role, content, timestamp: Date.now(), triggeredAnxiety: false };
 }
 
+const defaultAskAllProps = {
+  askAllMode: false,
+  onToggleAskAll: vi.fn(),
+  canAskAll: true,
+};
+
 describe("ChatInterface", () => {
   it("shows placeholder text when no messages", () => {
     render(
@@ -26,6 +32,7 @@ describe("ChatInterface", () => {
         disabled={false}
         suspectName="田中"
         streamingContent={null}
+        {...defaultAskAllProps}
       />,
     );
     expect(screen.getByText("田中 に質問してみましょう")).not.toBeNull();
@@ -41,6 +48,7 @@ describe("ChatInterface", () => {
         disabled={false}
         suspectName="田中"
         streamingContent={null}
+        {...defaultAskAllProps}
       />,
     );
     expect(screen.getByText("アリバイは？")).not.toBeNull();
@@ -56,6 +64,7 @@ describe("ChatInterface", () => {
         disabled={false}
         suspectName="田中"
         streamingContent={null}
+        {...defaultAskAllProps}
       />,
     );
     expect(screen.getByText("自宅にいました")).not.toBeNull();
@@ -71,6 +80,7 @@ describe("ChatInterface", () => {
         disabled={false}
         suspectName="田中"
         streamingContent={null}
+        {...defaultAskAllProps}
       />,
     );
     const dots = container.querySelectorAll("span.rounded-full");
@@ -86,6 +96,7 @@ describe("ChatInterface", () => {
         disabled={false}
         suspectName="田中"
         streamingContent="途中の回答"
+        {...defaultAskAllProps}
       />,
     );
     expect(screen.getByText("途中の回答")).not.toBeNull();
@@ -100,6 +111,7 @@ describe("ChatInterface", () => {
         disabled={false}
         suspectName="田中"
         streamingContent={null}
+        {...defaultAskAllProps}
       />,
     );
     const dots = container.querySelectorAll("span.rounded-full");
@@ -116,6 +128,7 @@ describe("ChatInterface", () => {
         disabled={false}
         suspectName="田中"
         streamingContent={null}
+        {...defaultAskAllProps}
       />,
     );
 
@@ -136,6 +149,7 @@ describe("ChatInterface", () => {
         disabled={false}
         suspectName="田中"
         streamingContent={null}
+        {...defaultAskAllProps}
       />,
     );
 
@@ -155,6 +169,7 @@ describe("ChatInterface", () => {
         disabled={false}
         suspectName="田中"
         streamingContent={null}
+        {...defaultAskAllProps}
       />,
     );
 
@@ -176,6 +191,7 @@ describe("ChatInterface", () => {
         disabled={true}
         suspectName="田中"
         streamingContent={null}
+        {...defaultAskAllProps}
       />,
     );
 
@@ -196,6 +212,7 @@ describe("ChatInterface", () => {
         disabled={false}
         suspectName="田中"
         streamingContent={null}
+        {...defaultAskAllProps}
       />,
     );
 
