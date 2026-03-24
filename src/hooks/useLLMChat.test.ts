@@ -1,23 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { act, renderHook } from "@testing-library/react";
 
-import { useClaudeChat } from "./useClaudeChat";
+import { useLLMChat } from "./useLLMChat";
 
-vi.mock("../api/claude", () => ({
-  callClaudeAPI: vi.fn(),
+vi.mock("../api/llm", () => ({
+  callLLM: vi.fn(),
 }));
 
-import { callClaudeAPI } from "../api/claude";
+import { callLLM } from "../api/llm";
 
-const mockCallClaudeAPI = vi.mocked(callClaudeAPI);
+const mockCallLLM = vi.mocked(callLLM);
 
-describe("useClaudeChat", () => {
+describe("useLLMChat", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("isLoading starts as false", () => {
-    const { result } = renderHook(() => useClaudeChat());
+    const { result } = renderHook(() => useLLMChat());
     expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBeNull();
   });
@@ -27,9 +27,9 @@ describe("useClaudeChat", () => {
     const promise = new Promise<string>((resolve) => {
       resolvePromise = resolve;
     });
-    mockCallClaudeAPI.mockReturnValueOnce(promise);
+    mockCallLLM.mockReturnValueOnce(promise);
 
-    const { result } = renderHook(() => useClaudeChat());
+    const { result } = renderHook(() => useLLMChat());
 
     let sendPromise: Promise<string>;
     act(() => {
@@ -47,9 +47,9 @@ describe("useClaudeChat", () => {
   });
 
   it("returns response string on success", async () => {
-    mockCallClaudeAPI.mockResolvedValueOnce("回答です");
+    mockCallLLM.mockResolvedValueOnce("回答です");
 
-    const { result } = renderHook(() => useClaudeChat());
+    const { result } = renderHook(() => useLLMChat());
 
     let response: string;
     await act(async () => {
@@ -60,9 +60,9 @@ describe("useClaudeChat", () => {
   });
 
   it("sets error state on API failure", async () => {
-    mockCallClaudeAPI.mockRejectedValueOnce(new Error("Network error"));
+    mockCallLLM.mockRejectedValueOnce(new Error("Network error"));
 
-    const { result } = renderHook(() => useClaudeChat());
+    const { result } = renderHook(() => useLLMChat());
 
     await act(async () => {
       try {
@@ -77,9 +77,9 @@ describe("useClaudeChat", () => {
   });
 
   it("clearError resets error to null", async () => {
-    mockCallClaudeAPI.mockRejectedValueOnce(new Error("error"));
+    mockCallLLM.mockRejectedValueOnce(new Error("error"));
 
-    const { result } = renderHook(() => useClaudeChat());
+    const { result } = renderHook(() => useLLMChat());
 
     await act(async () => {
       try {
@@ -99,9 +99,9 @@ describe("useClaudeChat", () => {
   });
 
   it("does not set error for AbortError", async () => {
-    mockCallClaudeAPI.mockRejectedValueOnce(new DOMException("aborted", "AbortError"));
+    mockCallLLM.mockRejectedValueOnce(new DOMException("aborted", "AbortError"));
 
-    const { result } = renderHook(() => useClaudeChat());
+    const { result } = renderHook(() => useLLMChat());
 
     await act(async () => {
       try {
@@ -116,18 +116,18 @@ describe("useClaudeChat", () => {
 
   it("aborts previous request when sending new one", async () => {
     const firstPromise = new Promise<string>(() => {});
-    mockCallClaudeAPI.mockReturnValueOnce(firstPromise);
-    mockCallClaudeAPI.mockResolvedValueOnce("second response");
+    mockCallLLM.mockReturnValueOnce(firstPromise);
+    mockCallLLM.mockResolvedValueOnce("second response");
 
-    const { result } = renderHook(() => useClaudeChat());
+    const { result } = renderHook(() => useLLMChat());
 
     // Send first request
     act(() => {
       void result.current.sendMessage("prompt", [], "first");
     });
 
-    // Verify that the abort signal was passed to callClaudeAPI
-    const firstSignal = mockCallClaudeAPI.mock.calls[0][2] as AbortSignal;
+    // Verify that the abort signal was passed to callLLM
+    const firstSignal = mockCallLLM.mock.calls[0][2] as AbortSignal;
 
     // Send second request (should abort first)
     await act(async () => {
@@ -138,15 +138,15 @@ describe("useClaudeChat", () => {
   });
 
   it("cleans up abort controller on unmount", () => {
-    mockCallClaudeAPI.mockReturnValueOnce(new Promise<string>(() => {}));
+    mockCallLLM.mockReturnValueOnce(new Promise<string>(() => {}));
 
-    const { result, unmount } = renderHook(() => useClaudeChat());
+    const { result, unmount } = renderHook(() => useLLMChat());
 
     act(() => {
       void result.current.sendMessage("prompt", [], "q");
     });
 
-    const signal = mockCallClaudeAPI.mock.calls[0][2] as AbortSignal;
+    const signal = mockCallLLM.mock.calls[0][2] as AbortSignal;
     expect(signal.aborted).toBe(false);
 
     unmount();

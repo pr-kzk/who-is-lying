@@ -7,7 +7,7 @@ import { HintButton } from "../components/HintButton";
 import { Layout } from "../components/Layout";
 import { ScoreBoard } from "../components/ScoreBoard";
 import { SuspectSelector } from "../components/SuspectSelector";
-import { useClaudeChat } from "../hooks/useClaudeChat";
+import { useLLMChat } from "../hooks/useLLMChat";
 import { useGameState } from "../hooks/useGameState";
 import { detectAnxiety } from "../utils/anxietyDetector";
 import { buildSystemPrompt } from "../utils/promptBuilder";
@@ -15,7 +15,7 @@ import { buildSystemPrompt } from "../utils/promptBuilder";
 export function InterrogationScreen() {
   const { state, dispatch, remainingTurns, currentSuspect, currentChatHistory, canUseHint } =
     useGameState();
-  const { sendMessage, isLoading, error, clearError } = useClaudeChat();
+  const { sendMessage, isLoading, error, clearError } = useLLMChat();
 
   const [isAnxious, setIsAnxious] = useState(false);
   const anxietyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -52,7 +52,7 @@ export function InterrogationScreen() {
 
       try {
         // Pass currentChatHistory (without the new message) because
-        // useClaudeChat.sendMessage appends userMessage itself
+        // useLLMChat.sendMessage appends userMessage itself
         const response = await sendMessage(systemPrompt, currentChatHistory, userMessage);
         const triggeredAnxiety = detectAnxiety(response);
 
@@ -72,7 +72,7 @@ export function InterrogationScreen() {
       } catch (err) {
         // AbortError is expected when switching suspects during a request
         if (err instanceof DOMException && err.name === "AbortError") return;
-        // Error is already captured by useClaudeChat and shown via toast
+        // Error is already captured by useLLMChat and shown via toast
       }
     },
     [currentSuspect, remainingTurns, dispatch, state.scenario, currentChatHistory, sendMessage],

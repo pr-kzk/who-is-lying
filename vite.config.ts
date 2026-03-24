@@ -14,7 +14,7 @@ export default defineConfig({
   lint: { options: { typeAware: true, typeCheck: true } },
   server: {
     proxy: {
-      "/api/chat": {
+      "/api/claude": {
         target: "https://api.anthropic.com",
         changeOrigin: true,
         rewrite: () => "/v1/messages",
@@ -26,6 +26,11 @@ export default defineConfig({
             proxyReq.setHeader("accept-encoding", "identity");
           });
         },
+      },
+      "/api/local": {
+        target: process.env["VITE_LLM_BASE_URL"] || "http://192.168.3.20:1234",
+        changeOrigin: true,
+        rewrite: () => "/v1/chat/completions",
       },
     },
   },

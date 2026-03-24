@@ -4,8 +4,8 @@ import { screen } from "@testing-library/react";
 import { InterrogationScreen } from "./InterrogationScreen";
 import { renderWithGameSetup, INTERROGATION_ACTIONS, createTurnActions } from "../test/helpers";
 
-vi.mock("../hooks/useClaudeChat", () => ({
-  useClaudeChat: vi.fn().mockReturnValue({
+vi.mock("../hooks/useLLMChat", () => ({
+  useLLMChat: vi.fn().mockReturnValue({
     sendMessage: vi.fn().mockResolvedValue("回答です"),
     isLoading: false,
     error: null,
@@ -21,11 +21,11 @@ vi.mock("../utils/promptBuilder", () => ({
   buildSystemPrompt: vi.fn().mockReturnValue("system prompt"),
 }));
 
-import { useClaudeChat } from "../hooks/useClaudeChat";
+import { useLLMChat } from "../hooks/useLLMChat";
 
 describe("InterrogationScreen", () => {
   beforeEach(() => {
-    vi.mocked(useClaudeChat).mockReturnValue({
+    vi.mocked(useLLMChat).mockReturnValue({
       sendMessage: vi.fn().mockResolvedValue("回答です"),
       isLoading: false,
       error: null,
@@ -74,7 +74,7 @@ describe("InterrogationScreen", () => {
   });
 
   it("shows error toast when error occurs", async () => {
-    vi.mocked(useClaudeChat).mockReturnValue({
+    vi.mocked(useLLMChat).mockReturnValue({
       sendMessage: vi.fn().mockResolvedValue(""),
       isLoading: false,
       error: "API接続エラー",

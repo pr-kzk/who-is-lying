@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { callClaudeAPI } from "../api/claude";
+import { callLLM } from "../api/llm";
 import type { ChatMessage } from "../types/index";
 
-export function useClaudeChat() {
+export function useLLMChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -34,7 +34,7 @@ export function useClaudeChat() {
           { role: "user" as const, content: userMessage },
         ];
 
-        const response = await callClaudeAPI(systemPrompt, messages, controller.signal);
+        const response = await callLLM(systemPrompt, messages, controller.signal);
         return response;
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {
