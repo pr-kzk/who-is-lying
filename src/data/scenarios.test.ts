@@ -15,6 +15,7 @@ describe("scenarios", () => {
     expect(scenario.crimeTime).toBeTruthy();
     expect(scenario.introParagraphs.length).toBeGreaterThan(0);
     expect(scenario.contradictionExplanation).toBeTruthy();
+    expect(scenario.dayContext).toBeTruthy();
     expect(scenario.hints.length).toBeGreaterThanOrEqual(3);
   });
 

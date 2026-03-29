@@ -42,6 +42,7 @@ const scenario: Scenario = {
   guiltyCharacterId: "test-guilty",
   contradictionExplanation: "テスト用の矛盾説明",
   hints: ["テスト用のヒント"],
+  dayContext: "当日は晴天だった",
 };
 
 describe("buildGuiltyPrompt", () => {

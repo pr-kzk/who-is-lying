@@ -38,6 +38,7 @@ export interface Scenario {
   guiltyCharacterId: string;
   contradictionExplanation: string;
   hints: string[]; // progressive hints shown when player uses hint button
+  dayContext: string; // verifiable facts about the day that ground the culprit's lie
 }
 
 export interface ChatMessage {
