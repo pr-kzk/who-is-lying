@@ -7,14 +7,17 @@ import { defineConfig } from "vite-plus";
 
 // .env を process.env に読み込む（Vite が proxy configure 時に参照できるよう）
 try {
-  const lines = readFileSync(resolve(process.cwd(), ".env"), "utf8").split("\n");
-  for (const line of lines) {
-    const match = line.match(/^([^#=\s][^=]*)=(.*)$/);
-    if (match) {
-      const key = match[1].trim();
-      const val = match[2].trim().replace(/^["']|["']$/g, "");
-      if (!(key in process.env)) process.env[key] = val;
-    }
+  const envPath = resolve(process.cwd(), ".env");
+  const content = readFileSync(envPath, "utf8");
+  for (const line of content.split(/\r?\n/)) {
+    const eqIdx = line.indexOf("=");
+    if (eqIdx === -1 || line.trimStart().startsWith("#")) continue;
+    const key = line.slice(0, eqIdx).trim();
+    const val = line
+      .slice(eqIdx + 1)
+      .trim()
+      .replace(/^["']|["']$/g, "");
+    process.env[key] = val;
   }
 } catch {
   // .env が存在しない場合は無視
