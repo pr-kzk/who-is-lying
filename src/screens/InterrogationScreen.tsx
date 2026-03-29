@@ -163,6 +163,10 @@ export function InterrogationScreen() {
 
       if (!currentSuspect || remainingTurns <= 0) return;
 
+      // Capture suspectId before async operation to avoid using stale currentSuspectId
+      // if the user switches tabs while waiting for the response
+      const suspectId = currentSuspect.id;
+
       dispatch({ type: "ADD_USER_MESSAGE", content: userMessage });
 
       const systemPrompt = buildSystemPrompt(currentSuspect, state.scenario, state.difficulty);
@@ -174,7 +178,8 @@ export function InterrogationScreen() {
         const triggeredAnxiety = detectAnxiety(response);
 
         dispatch({
-          type: "ADD_ASSISTANT_MESSAGE",
+          type: "ADD_ASSISTANT_MESSAGE_FOR_SUSPECT",
+          suspectId,
           content: response,
           triggeredAnxiety,
         });
