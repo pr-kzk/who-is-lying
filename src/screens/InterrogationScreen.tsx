@@ -34,6 +34,8 @@ export function InterrogationScreen() {
     state.difficulty,
   );
 
+  const streamingSuspectIdRef = useRef<string | null>(null);
+
   const [isAnxious, setIsAnxious] = useState(false);
   const anxietyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [errorToast, setErrorToast] = useState<string | null>(null);
@@ -163,6 +165,11 @@ export function InterrogationScreen() {
 
       if (!currentSuspect || remainingTurns <= 0) return;
 
+      // Capture suspectId before async operation to avoid using stale currentSuspectId
+      // if the user switches tabs while waiting for the response
+      const suspectId = currentSuspect.id;
+      streamingSuspectIdRef.current = suspectId;
+
       dispatch({ type: "ADD_USER_MESSAGE", content: userMessage });
 
       const systemPrompt = buildSystemPrompt(currentSuspect, state.scenario, state.difficulty);
@@ -174,7 +181,8 @@ export function InterrogationScreen() {
         const triggeredAnxiety = detectAnxiety(response);
 
         dispatch({
-          type: "ADD_ASSISTANT_MESSAGE",
+          type: "ADD_ASSISTANT_MESSAGE_FOR_SUSPECT",
+          suspectId,
           content: response,
           triggeredAnxiety,
         });
@@ -224,9 +232,13 @@ export function InterrogationScreen() {
 
   const inputDisabled = remainingTurns <= 0;
   const currentSuspectAskAllLoading = askAllLoading[state.currentSuspectId] ?? false;
-  const effectiveIsLoading = isLoading || currentSuspectAskAllLoading;
+  const effectiveIsLoading =
+    (isLoading && streamingSuspectIdRef.current === state.currentSuspectId) ||
+    currentSuspectAskAllLoading;
   const effectiveStreamingContent =
-    streamingContent ??
+    (streamingContent && streamingSuspectIdRef.current === state.currentSuspectId
+      ? streamingContent
+      : null) ??
     (currentSuspectAskAllLoading ? (askAllStreaming[state.currentSuspectId] ?? null) : null);
 
   return (
