@@ -35,6 +35,7 @@ export function InterrogationScreen() {
   );
 
   const streamingSuspectIdRef = useRef<string | null>(null);
+  const [loadingSuspectId, setLoadingSuspectId] = useState<string | null>(null);
 
   const [isAnxious, setIsAnxious] = useState(false);
   const anxietyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -169,6 +170,7 @@ export function InterrogationScreen() {
       // if the user switches tabs while waiting for the response
       const suspectId = currentSuspect.id;
       streamingSuspectIdRef.current = suspectId;
+      setLoadingSuspectId(suspectId);
 
       dispatch({ type: "ADD_USER_MESSAGE", content: userMessage });
 
@@ -198,6 +200,8 @@ export function InterrogationScreen() {
         // AbortError is expected when switching suspects during a request
         if (err instanceof DOMException && err.name === "AbortError") return;
         // Error is already captured by useLLMChat and shown via toast
+      } finally {
+        setLoadingSuspectId(null);
       }
     },
     [
@@ -230,8 +234,10 @@ export function InterrogationScreen() {
 
   if (!currentSuspect) return null;
 
-  const inputDisabled = remainingTurns <= 0;
+  // Disable input whenever ANY LLM request is active to prevent aborting in-flight responses
+  const inputDisabled = remainingTurns <= 0 || isLoading || isAskAllActive;
   const currentSuspectAskAllLoading = askAllLoading[state.currentSuspectId] ?? false;
+  // Typing indicator is only shown for the suspect whose response is being generated
   const effectiveIsLoading =
     (isLoading && streamingSuspectIdRef.current === state.currentSuspectId) ||
     currentSuspectAskAllLoading;
@@ -248,7 +254,7 @@ export function InterrogationScreen() {
         <ScoreBoard />
 
         {/* Suspect selector */}
-        <SuspectSelector askAllLoading={askAllLoading} />
+        <SuspectSelector askAllLoading={askAllLoading} loadingSuspectId={loadingSuspectId} />
 
         {/* Main content area */}
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
