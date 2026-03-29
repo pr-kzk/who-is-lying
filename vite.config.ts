@@ -1,7 +1,27 @@
 import type { ClientRequest } from "node:http";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite-plus";
+
+// .env を process.env に読み込む（Vite が proxy configure 時に参照できるよう）
+try {
+  const envPath = resolve(process.cwd(), ".env");
+  const content = readFileSync(envPath, "utf8");
+  for (const line of content.split(/\r?\n/)) {
+    const eqIdx = line.indexOf("=");
+    if (eqIdx === -1 || line.trimStart().startsWith("#")) continue;
+    const key = line.slice(0, eqIdx).trim();
+    const val = line
+      .slice(eqIdx + 1)
+      .trim()
+      .replace(/^["']|["']$/g, "");
+    process.env[key] = val;
+  }
+} catch {
+  // .env が存在しない場合は無視
+}
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
