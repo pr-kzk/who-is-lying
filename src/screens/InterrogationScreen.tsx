@@ -232,7 +232,9 @@ export function InterrogationScreen() {
 
   const inputDisabled = remainingTurns <= 0;
   const currentSuspectAskAllLoading = askAllLoading[state.currentSuspectId] ?? false;
-  const effectiveIsLoading = isLoading || currentSuspectAskAllLoading;
+  const effectiveIsLoading =
+    (isLoading && streamingSuspectIdRef.current === state.currentSuspectId) ||
+    currentSuspectAskAllLoading;
   const effectiveStreamingContent =
     (streamingContent && streamingSuspectIdRef.current === state.currentSuspectId
       ? streamingContent
