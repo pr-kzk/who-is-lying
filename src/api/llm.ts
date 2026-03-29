@@ -38,7 +38,7 @@ async function streamClaude(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: import.meta.env["VITE_CLAUDE_MODEL"] || "claude-opus-4-6",
+      model: import.meta.env["VITE_CLAUDE_MODEL"] || "claude-sonnet-4-6",
       max_tokens: 500,
       stream: true,
       system: systemPrompt,
