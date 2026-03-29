@@ -17,9 +17,10 @@ const colorMap: Record<string, string> = {
 
 interface SuspectSelectorProps {
   askAllLoading?: Record<string, boolean>;
+  loadingSuspectId?: string | null;
 }
 
-export function SuspectSelector({ askAllLoading }: SuspectSelectorProps) {
+export function SuspectSelector({ askAllLoading, loadingSuspectId }: SuspectSelectorProps) {
   const { state, dispatch } = useGameState();
 
   function handleSelect(suspectId: string) {
@@ -54,7 +55,7 @@ export function SuspectSelector({ askAllLoading }: SuspectSelectorProps) {
             <span className={`text-xs ${isActive ? "text-gray-400" : "text-gray-600"}`}>
               {character.job} / {character.age}
             </span>
-            {askAllLoading?.[character.id] && (
+            {(askAllLoading?.[character.id] || loadingSuspectId === character.id) && (
               <span className="absolute top-1 left-2 w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
             )}
             {messageCount > 0 && (
